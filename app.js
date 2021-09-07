@@ -7,8 +7,8 @@ const logger = require("morgan");
 
 require("./config/db");
 
-const handleError = require("./routes/middlewares/handleError");
-const invalidUrlError = require("./routes/middlewares/invalidUrlError");
+const handleError = require("./middlewares/handleError");
+const invalidUrlError = require("./middlewares/invalidUrlError");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
