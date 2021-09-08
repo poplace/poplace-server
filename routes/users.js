@@ -1,8 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
 
-router.get("/", function (req, res, next) {
-  res.json("respond with a resource");
-});
+const usersController = require("../controllers/usersController");
+
+const upload = multer();
+
+router.post(
+  "/signup",
+  upload.fields([{ name: "photo" }]),
+  usersController.signup,
+);
 
 module.exports = router;
