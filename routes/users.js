@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", function (req, res, next) {
-  res.json("respond with a resource");
-});
+const usersController = require("../controllers/usersController");
+
+router.post("/login", usersController.login);
 
 module.exports = router;
