@@ -1,13 +1,45 @@
 const User = require("../models/User");
 const AWS = require("aws-sdk");
+const jwt = require("jsonwebtoken");
+const createError = require("http-errors");
+
+const SECRET_KEY = process.env.SECRET_KEY;
+
+exports.login = async function (req, res, next) {
+  const { email } = req.body;
+
+  try {
+    const token = jwt.sign({ email }, SECRET_KEY);
+    const originalMember = await User.findOne({ email }).lean();
+
+    if (originalMember) {
+      const { nickname, image, pushAlarmStatus } = originalMember;
+
+      return res.json({
+        token,
+        nickname,
+        image,
+        pushAlarmStatus,
+        isOriginalMember: true,
+      });
+    }
+
+    await User.create({ email });
+
+    return res.json({
+      token,
+      nickname: null,
+      image: null,
+      pushAlarmStatus: true,
+      isOriginalMember: false,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.signup = async function (req, res, next) {
   try {
-    console.log(req.body); // email, nickname
-    console.log(req.files);
-    // ?유효성검사
-    // ?이미지 없으면 기본이미지
-
     if (req.files) {
       const buffer = req.files.photo[0].buffer;
       const fileName = req.files.photo[0].originalname;
@@ -31,20 +63,14 @@ exports.signup = async function (req, res, next) {
 
       const s3 = new AWS.S3();
 
-      // s3.upload(params, (error, data) => {
-      //   if (error) {
-      //     console.log("실패일세..");
-      //     console.log(error);
-      //     // 에러처리
-      //   } else {
-      //     console.log("성공일세..");
-      //     console.log(data.Location);
-      //     // 이미지링크 DB에 담기
-      //   }
-      // });
+      s3.upload(params, (error, data) => {
+        if (error) {
+          console.log(error);
+        } else {
+          return res.json({ status: "OK" });
+        }
+      });
     }
-
-    res.json("hi");
   } catch (err) {
     next(err);
   }

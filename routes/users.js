@@ -6,10 +6,7 @@ const usersController = require("../controllers/usersController");
 
 const upload = multer();
 
-router.post(
-  "/signup",
-  upload.fields([{ name: "photo" }]),
-  usersController.signup,
-);
+router.post("/login", usersController.login);
+router.post("/signup", upload.fields([{ name: "photo" }]), usersController.signup);
 
 module.exports = router;
