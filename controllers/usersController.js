@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
-const secretKey = process.env.SECRET_KEY;
+const SECRET_KEY = process.env.SECRET_KEY;
 
 exports.login = async function (req, res, next) {
   const { email } = req.body;
