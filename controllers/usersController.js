@@ -73,7 +73,7 @@ exports.signup = async function (req, res, next) {
       if (err) {
         console.log(err);
       } else {
-        await User.findOneAndUpdate({ emai: requestedEmail }, { image: data.Location });
+        await User.findOneAndUpdate({ email: requestedEmail }, { image: data.Location });
 
         res.json({ status: "OK" });
       }
