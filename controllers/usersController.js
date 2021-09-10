@@ -18,9 +18,10 @@ exports.login = async function (req, res, next) {
     const originalMember = await User.findOne({ email }).lean();
 
     if (originalMember) {
-      const { nickname, image, pushAlarmStatus } = originalMember;
+      const { _id: id, nickname, image, pushAlarmStatus } = originalMember;
 
       return res.json({
+        id,
         token,
         nickname,
         image,
@@ -29,9 +30,11 @@ exports.login = async function (req, res, next) {
       });
     }
 
-    await User.create({ email });
+    const user = await User.create({ email });
+    const { _id: id } = user;
 
     return res.json({
+      id,
       token,
       nickname: null,
       image: null,
