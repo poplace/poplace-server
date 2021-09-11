@@ -1,8 +1,8 @@
-const User = require("../models/User");
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
 
+const User = require("../models/User");
 const ERROR = require("../constants/error");
 
 const SECRET_KEY = process.env.SECRET_KEY;
