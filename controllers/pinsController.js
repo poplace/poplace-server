@@ -78,3 +78,21 @@ exports.createPin = async function (req, res, next) {
     next(err);
   }
 };
+
+exports.updatePin = async function (req, res, next) {
+  const { pinId } = req.body;
+
+  try {
+    const currentTime = new Date().toISOString();
+
+    await Pin.findByIdAndUpdate(pinId, {
+      savedAt: currentTime,
+    }, {
+      active: false,
+    });
+
+    return res.json({ status: "OK" });
+  } catch (err) {
+    next(err);
+  }
+};
