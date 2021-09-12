@@ -32,9 +32,7 @@ function nodeSchedule() {
     }
   }
 
-  const job = schedule.scheduleJob("*/1 * * * * *", () => {
-    updatePin();
-  });
+  const job = schedule.scheduleJob("*/1 * * * * *", () => { updatePin(); });
 }
 
 module.exports = nodeSchedule;

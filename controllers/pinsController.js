@@ -37,7 +37,6 @@ exports.updatePin = async function (req, res, next) {
 
     return res.json({ status: "OK" });
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };
