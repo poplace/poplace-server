@@ -15,20 +15,14 @@ exports.getMyPin = async function (req, res, next) {
   try {
     const user = await User.findOne({ email }).lean();
     const { _id } = user;
+    const myCreatedPins = await Pin.find({ creator: _id }).lean();
+    const mySavedPins = await Pin.find({ savedUser: _id }).lean();
 
     if (!user) {
       return next(createError(400, ERROR.notFoundUser));
     }
 
-    const myCreatedPins = await Pin.find({ creator: _id }).lean();
-
-    const pins = myCreatedPins.map((pin) => {
-      const { image, text, tag, createdAt, savedAt } = pin;
-
-      return { image, text, tag, createdAt, savedAt: savedAt || null };
-    });
-
-    return res.json({ status: "OK", pins });
+    return res.json({ status: "OK", myCreatedPins, mySavedPins });
   } catch (err) {
     next(err);
   }
