@@ -18,11 +18,11 @@ module.exports = {
     semi: ["warn", "always"],
     curly: ["warn", "all"],
     "no-var": "error",
-    "prettier/prettier": "warn",
     "eol-last": ["warn", "always"],
     "arrow-parens": ["warn", "always"],
     "func-style": ["warn", "declaration"],
     "comma-dangle": ["warn", "always-multiline"],
+    "prettier/prettier": ["warn", { printWidth: 100 }],
     "linebreak-style": ["warn", "unix"],
     "no-unused-vars": [
       "warn",
