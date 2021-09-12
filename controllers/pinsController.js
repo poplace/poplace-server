@@ -5,7 +5,6 @@ const Pin = require("../models/Pin");
 const User = require("../models/User");
 const ERROR = require("../constants/error");
 
-const SECRET_KEY = process.env.SECRET_KEY;
 const AWS_REGION = process.env.AWS_REGION;
 const IDENTITY_POOL_ID = process.env.IDENTITY_POOL_ID;
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
@@ -16,19 +15,17 @@ exports.getMyPin = async function (req, res, next) {
   try {
     const user = await User.findOne({ email }).lean();
     const { _id } = user;
-
     const myCreatedPins = await Pin.find({ creator: _id }).lean();
-
-    console.log(myCreatedPins);
+    const mySavedPins = await Pin.find({ savedUser: _id }).lean();
 
     if (!user) {
       return next(createError(400, ERROR.notFoundUser));
     }
+
+    return res.json({ status: "OK", myCreatedPins, mySavedPins });
   } catch (err) {
     next(err);
   }
-
-  return res.json({ status: "OK" });
 };
 
 exports.createPin = async function (req, res, next) {
