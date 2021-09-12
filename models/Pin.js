@@ -28,10 +28,6 @@ const pinsSchema = new mongoose.Schema({
     type: String,
     required: true,
   }],
-  viewedUsers: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  }],
   savedUser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -43,6 +39,10 @@ const pinsSchema = new mongoose.Schema({
     type: geoSchema,
     required: true,
   },
+  active: {
+    type: Boolean,
+    default: true,
+  }
 }, {
   timestamps: { createdAt: true },
 });

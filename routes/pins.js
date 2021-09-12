@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const pinsController = require("../controllers/pinsController");
+
 const verifyToken = require("../middlewares/verifyToken");
 
-router.get("/:pinId",verifyToken, pinsController.getPin);
-router.post("/", pinsController.createPin);
+router.put("/:pinId", verifyToken, pinsController.updatePin);
+router.post("/", verifyToken, pinsController.createPin);
 
 module.exports = router;

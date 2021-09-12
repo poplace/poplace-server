@@ -16,6 +16,9 @@ const pinsRouter = require("./routes/pins");
 
 const app = express();
 
+const nodeSchedule = require("./config/node-schedule");
+nodeSchedule();
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
