@@ -121,4 +121,3 @@ exports.updatePin = async function (req, res, next) {
     next(err);
   }
 };
-
