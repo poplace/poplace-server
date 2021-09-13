@@ -9,7 +9,32 @@ const AWS_REGION = process.env.AWS_REGION;
 const IDENTITY_POOL_ID = process.env.IDENTITY_POOL_ID;
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
 
-exports.getMyPin = async function (req, res, next) {
+exports.findPins = async function (req, res, next) {
+  const latitude = Number(req.query.latitude);
+  const longitude = Number(req.query.longitude);
+
+  try {
+    const pinsList = await Pin.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          distanceField: "dist.calculated",
+          maxDistance: 1000,
+          spherical: true,
+        },
+      },
+    ]);
+
+    return res.json({ pinsList: pinsList });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getMyPins = async function (req, res, next) {
   const { email } = req.query;
 
   try {
@@ -28,6 +53,30 @@ exports.getMyPin = async function (req, res, next) {
   }
 };
 
+exports.findPins = async function (req, res, next) {
+  const latitude = Number(req.query.latitude);
+  const longitude = Number(req.query.longitude);
+
+  try {
+    const pinsList = await Pin.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          distanceField: "dist.calculated",
+          maxDistance: 1000,
+          spherical: true,
+        },
+      },
+    ]);
+
+    return res.json({ pinsList: pinsList });
+  } catch (err) {
+    next(err);
+  }
+};
 exports.createPin = async function (req, res, next) {
   const { tags, text, creator, coords } = req.body;
   const { buffer, originalname } = req.files.photo[0];
@@ -62,18 +111,41 @@ exports.createPin = async function (req, res, next) {
           image: data.Location,
           creator,
           text,
-          tag: parsedTags,
+          tags: parsedTags,
           position: {
-            location: {
-              type: "Point",
-              coordinates: parsedCoords,
-            },
+            type: "Point",
+            coordinates: parsedCoords,
           },
         });
 
         res.json({ status: "Save Pin" });
       }
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.updatePin = async function (req, res, next) {
+  const { pinId, userId } = req.body;
+
+  try {
+    const currentTime = new Date().toISOString();
+
+    await Pin.findByIdAndUpdate(
+      pinId,
+      {
+        savedAt: currentTime,
+      },
+      {
+        active: false,
+      },
+      {
+        savedUser: userId,
+      },
+    );
+
+    return res.json({ status: "OK" });
   } catch (err) {
     next(err);
   }
