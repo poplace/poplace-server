@@ -1,50 +1,54 @@
 const mongoose = require("mongoose");
 
 const geoSchema = new mongoose.Schema({
-  location: {
-    type: { type: String },
-    coordinates: [],
+  type: { type: String },
+  enum: ["point"],
+  coordinates: {
+    type: [Number],
+    required: true,
+    index: "2dsphere",
   },
 });
 
-geoSchema.index({ location: "2dsphere" });
-
-const pinsSchema = new mongoose.Schema({
-  creator: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const pinsSchema = new mongoose.Schema(
+  {
+    creator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    image: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    text: {
+      type: String,
+      minLength: 10,
+      required: true,
+    },
+    tag: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    savedUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    savedAt: {
+      type: Date,
+    },
+    position: {
+      type: geoSchema,
+      required: true,
+    },
   },
-  image: [{
-    type: String,
-    required: true,
-  }],
-  text: {
-    type: String,
-    minLength: 10,
-    required: true,
+  {
+    timestamps: { createdAt: true },
   },
-  tag: [{
-    type: String,
-    required: true,
-  }],
-  savedUser: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  savedAt: {
-    type: Date,
-  },
-  position: {
-    type: geoSchema,
-    required: true,
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  }
-}, {
-  timestamps: { createdAt: true },
-});
+);
 
 module.exports = mongoose.model("Pin", pinsSchema);
