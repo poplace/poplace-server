@@ -34,7 +34,7 @@ exports.findPins = async function (req, res, next) {
   }
 };
 
-exports.getMyPin = async function (req, res, next) {
+exports.getMyPins = async function (req, res, next) {
   const { email } = req.query;
 
   try {
@@ -60,6 +60,7 @@ exports.createPin = async function (req, res, next) {
   const parsedCoords = JSON.parse(coords);
   const date = Date.now().toString();
 
+  console.log("😁", parsedCoords);
   AWS.config.update({
     region: AWS_REGION,
     credentials: new AWS.CognitoIdentityCredentials({
@@ -89,10 +90,8 @@ exports.createPin = async function (req, res, next) {
           text,
           tag: parsedTags,
           position: {
-            location: {
-              type: "Point",
-              coordinates: parsedCoords,
-            },
+            type: "Point",
+            coordinates: parsedCoords,
           },
         });
 

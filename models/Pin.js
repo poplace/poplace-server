@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const geoSchema = new mongoose.Schema({
   type: { type: String },
-  enum: ["point"],
+  enum: ["Point"],
   coordinates: {
     type: [Number],
     required: true,
@@ -43,7 +43,7 @@ const pinsSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true,
-  }
+  },
 }, {
   timestamps: { createdAt: true },
 });
