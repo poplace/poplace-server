@@ -9,6 +9,31 @@ const AWS_REGION = process.env.AWS_REGION;
 const IDENTITY_POOL_ID = process.env.IDENTITY_POOL_ID;
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
 
+exports.findPins = async function (req, res, next) {
+  const latitude = Number(req.query.latitude);
+  const longitude = Number(req.query.longitude);
+
+  try {
+    const pinsList = await Pin.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          distanceField: "dist.calculated",
+          maxDistance: 1000,
+          spherical: true,
+        },
+      },
+    ]);
+
+    return res.json({ pinsList: pinsList });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getMyPin = async function (req, res, next) {
   const { email } = req.query;
 
@@ -96,3 +121,4 @@ exports.updatePin = async function (req, res, next) {
     next(err);
   }
 };
+

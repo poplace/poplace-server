@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
 
 const geoSchema = new mongoose.Schema({
-  location: {
-    type: { type: String },
-    coordinates: [],
+  type: { type: String },
+  enum: ["point"],
+  coordinates: {
+    type: [Number],
+    required: true,
+    index: "2dsphere",
   },
 });
-
-geoSchema.index({ location: "2dsphere" });
 
 const pinsSchema = new mongoose.Schema({
   creator: {
