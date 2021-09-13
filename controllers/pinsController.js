@@ -60,7 +60,6 @@ exports.createPin = async function (req, res, next) {
   const parsedCoords = JSON.parse(coords);
   const date = Date.now().toString();
 
-  console.log("😁", parsedCoords);
   AWS.config.update({
     region: AWS_REGION,
     credentials: new AWS.CognitoIdentityCredentials({
@@ -88,7 +87,7 @@ exports.createPin = async function (req, res, next) {
           image: data.Location,
           creator,
           text,
-          tag: parsedTags,
+          tags: parsedTags,
           position: {
             type: "Point",
             coordinates: parsedCoords,
@@ -104,7 +103,7 @@ exports.createPin = async function (req, res, next) {
 };
 
 exports.updatePin = async function (req, res, next) {
-  const { pinId } = req.body;
+  const { pinId, userId } = req.body;
 
   try {
     const currentTime = new Date().toISOString();
@@ -113,6 +112,8 @@ exports.updatePin = async function (req, res, next) {
       savedAt: currentTime,
     }, {
       active: false,
+    }, {
+      savedUser: userId,
     });
 
     return res.json({ status: "OK" });

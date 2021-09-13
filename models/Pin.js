@@ -25,7 +25,7 @@ const pinsSchema = new mongoose.Schema({
     minLength: 10,
     required: true,
   },
-  tag: [{
+  tags: [{
     type: String,
     required: true,
   }],
