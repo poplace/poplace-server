@@ -53,8 +53,11 @@ exports.findPins = async function (req, res, next) {
   }
 };
 exports.createPin = async function (req, res, next) {
+  console.log("!!!!!!!!!!!!!!!!!!");
   const { tags, text, creator, coords } = req.body;
+  console.log("",req.files);
   const { buffer, originalname } = req.files.photo[0];
+  console.log("!!!!!!!!!!!!!!!!!!");
   const parsedTags = JSON.parse(tags);
   const parsedCoords = JSON.parse(coords);
   const date = Date.now().toString();
@@ -88,10 +91,8 @@ exports.createPin = async function (req, res, next) {
           text,
           tag: parsedTags,
           position: {
-            location: {
-              type: "Point",
-              coordinates: parsedCoords,
-            },
+            type: "Point",
+            coordinates: parsedCoords,
           },
         });
 
@@ -120,6 +121,18 @@ exports.updatePin = async function (req, res, next) {
     );
 
     return res.json({ status: "OK" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+
+  try {
+    await Pin.deleteMany({ creator: id });
+
+    res.json({ status: "OK" });
   } catch (err) {
     next(err);
   }

@@ -91,3 +91,13 @@ exports.signup = async function (req, res, next) {
     next(err);
   }
 };
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+  try {
+    await User.findByIdAndDelete(id);
+    next();
+  } catch (err) {
+    next(err);
+  }
+ };
