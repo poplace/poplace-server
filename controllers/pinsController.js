@@ -9,25 +9,6 @@ const AWS_REGION = process.env.AWS_REGION;
 const IDENTITY_POOL_ID = process.env.IDENTITY_POOL_ID;
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
 
-exports.getMyPin = async function (req, res, next) {
-  const { email } = req.query;
-
-  try {
-    const user = await User.findOne({ email }).lean();
-    const { _id } = user;
-    const myCreatedPins = await Pin.find({ creator: _id }).lean();
-    const mySavedPins = await Pin.find({ savedUser: _id }).lean();
-
-    if (!user) {
-      return next(createError(400, ERROR.notFoundUser));
-    }
-
-    return res.json({ status: "OK", myCreatedPins, mySavedPins });
-  } catch (err) {
-    next(err);
-  }
-};
-
 exports.findPins = async function (req, res, next) {
   const latitude = Number(req.query.latitude);
   const longitude = Number(req.query.longitude);
@@ -52,6 +33,26 @@ exports.findPins = async function (req, res, next) {
     next(err);
   }
 };
+
+exports.getMyPins = async function (req, res, next) {
+  const { email } = req.query;
+
+  try {
+    const user = await User.findOne({ email }).lean();
+    const { _id } = user;
+    const myCreatedPins = await Pin.find({ creator: _id }).lean();
+    const mySavedPins = await Pin.find({ savedUser: _id }).lean();
+
+    if (!user) {
+      return next(createError(400, ERROR.notFoundUser));
+    }
+
+    return res.json({ status: "OK", myCreatedPins, mySavedPins });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.createPin = async function (req, res, next) {
   const { tags, text, creator, coords } = req.body;
   const { buffer, originalname } = req.files.photo[0];
@@ -86,12 +87,10 @@ exports.createPin = async function (req, res, next) {
           image: data.Location,
           creator,
           text,
-          tag: parsedTags,
+          tags: parsedTags,
           position: {
-            location: {
-              type: "Point",
-              coordinates: parsedCoords,
-            },
+            type: "Point",
+            coordinates: parsedCoords,
           },
         });
 
@@ -104,20 +103,18 @@ exports.createPin = async function (req, res, next) {
 };
 
 exports.updatePin = async function (req, res, next) {
-  const { pinId } = req.body;
+  const { pinId, userId } = req.body;
 
   try {
     const currentTime = new Date().toISOString();
 
-    await Pin.findByIdAndUpdate(
-      pinId,
-      {
-        savedAt: currentTime,
-      },
-      {
-        active: false,
-      },
-    );
+    await Pin.findByIdAndUpdate(pinId, {
+      savedAt: currentTime,
+    }, {
+      active: false,
+    }, {
+      savedUser: userId,
+    });
 
     return res.json({ status: "OK" });
   } catch (err) {
