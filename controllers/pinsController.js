@@ -53,30 +53,6 @@ exports.getMyPins = async function (req, res, next) {
   }
 };
 
-exports.findPins = async function (req, res, next) {
-  const latitude = Number(req.query.latitude);
-  const longitude = Number(req.query.longitude);
-
-  try {
-    const pinsList = await Pin.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-          distanceField: "dist.calculated",
-          maxDistance: 1000,
-          spherical: true,
-        },
-      },
-    ]);
-
-    return res.json({ pinsList: pinsList });
-  } catch (err) {
-    next(err);
-  }
-};
 exports.createPin = async function (req, res, next) {
   const { tags, text, creator, coords } = req.body;
   const { buffer, originalname } = req.files.photo[0];
@@ -146,6 +122,17 @@ exports.updatePin = async function (req, res, next) {
     );
 
     return res.json({ status: "OK" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+  try {
+    await Pin.deleteMany({ creator: id });
+
+    res.json({ status: "OK" });
   } catch (err) {
     next(err);
   }
