@@ -10,49 +10,42 @@ const geoSchema = new mongoose.Schema({
   },
 });
 
-const pinsSchema = new mongoose.Schema(
-  {
-    creator: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    image: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    text: {
-      type: String,
-      minLength: 10,
-      required: true,
-    },
-    tags: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    savedUser: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    savedAt: {
-      type: Date,
-    },
-    position: {
-      type: geoSchema,
-      required: true,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
+const pinsSchema = new mongoose.Schema({
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
-  {
-    timestamps: { createdAt: true },
+  image: [{
+    type: String,
+    required: true,
+  }],
+  text: {
+    type: String,
+    minLength: 10,
+    required: true,
   },
-);
+  tags: [{
+    type: String,
+    required: true,
+  }],
+  savedUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  savedAt: {
+    type: Date,
+  },
+  position: {
+    type: geoSchema,
+    required: true,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+}, {
+  timestamps: { createdAt: true },
+});
 
 module.exports = mongoose.model("Pin", pinsSchema);

@@ -108,18 +108,13 @@ exports.updatePin = async function (req, res, next) {
   try {
     const currentTime = new Date().toISOString();
 
-    await Pin.findByIdAndUpdate(
-      pinId,
-      {
-        savedAt: currentTime,
-      },
-      {
-        active: false,
-      },
-      {
-        savedUser: userId,
-      },
-    );
+    await Pin.findByIdAndUpdate(pinId, {
+      savedAt: currentTime,
+    }, {
+      active: false,
+    }, {
+      savedUser: userId,
+    });
 
     return res.json({ status: "OK" });
   } catch (err) {
