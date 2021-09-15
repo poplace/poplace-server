@@ -41,7 +41,7 @@ exports.getMyPins = async function (req, res, next) {
     const user = await User.findOne({ email }).lean();
     const { _id } = user;
     const myCreatedPins = await Pin.find({ creator: _id }).lean();
-    const mySavedPins = await Pin.find({ savedUser: _id }).lean();
+    const mySavedPins = await Pin.find({ savedUser: _id, active: true }).lean();
 
     if (!user) {
       return next(createError(400, ERROR.notFoundUser));
@@ -110,9 +110,6 @@ exports.updatePin = async function (req, res, next) {
 
     await Pin.findByIdAndUpdate(pinId, {
       savedAt: currentTime,
-    }, {
-      active: false,
-    }, {
       savedUser: userId,
     });
 

@@ -8,7 +8,6 @@ function verifyToken(req, res, next) {
     const email = jwt.verify(token, YOUR_SECRET_KEY);
 
     req.userEmail = email;
-
     next();
   } catch (err) {
     next(err);
