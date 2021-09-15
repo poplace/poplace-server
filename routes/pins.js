@@ -6,8 +6,8 @@ const upload = multer();
 const pinsController = require("../controllers/pinsController");
 const verifyToken = require("../middlewares/verifyToken");
 
-router.get("/", pinsController.findPins);
-router.get("/:userId", pinsController.getMyPins);
+router.get("/", verifyToken, pinsController.findPins);
+router.get("/:userId", verifyToken, pinsController.getMyPins);
 router.post("/", verifyToken, upload.fields([{ name: "photo" }]), pinsController.createPin);
 router.put("/:pinId", verifyToken, pinsController.updatePin);
 
