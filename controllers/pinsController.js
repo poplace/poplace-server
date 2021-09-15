@@ -121,3 +121,14 @@ exports.updatePin = async function (req, res, next) {
     next(err);
   }
 };
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+  try {
+    await Pin.deleteMany({ creator: id });
+
+    res.json({ status: "OK" });
+  } catch (err) {
+    next(err);
+  }
+};

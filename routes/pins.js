@@ -7,8 +7,8 @@ const pinsController = require("../controllers/pinsController");
 const verifyToken = require("../middlewares/verifyToken");
 
 router.get("/", pinsController.findPins);
-router.get("/:userId", pinsController.getMyPins);
 router.post("/", verifyToken, upload.fields([{ name: "photo" }]), pinsController.createPin);
+router.get("/:userId", pinsController.getMyPins);
 router.put("/:pinId", verifyToken, pinsController.updatePin);
 
 module.exports = router;
