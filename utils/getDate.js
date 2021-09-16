@@ -11,6 +11,8 @@ function getDate(time) {
   if (difference >= 86400) {
     return true;
   }
+
+  return false;
 }
 
 module.exports = getDate;

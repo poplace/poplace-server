@@ -4,6 +4,7 @@ const AWS = require("aws-sdk");
 const Pin = require("../models/Pin");
 const User = require("../models/User");
 const ERROR = require("../constants/error");
+const validateCreatePin = require("../utils/validateCreatePin");
 
 const AWS_REGION = process.env.AWS_REGION;
 const IDENTITY_POOL_ID = process.env.IDENTITY_POOL_ID;
@@ -59,6 +60,11 @@ exports.createPin = async function (req, res, next) {
   const parsedTags = JSON.parse(tags);
   const parsedCoords = JSON.parse(coords);
   const date = Date.now().toString();
+  const isValid = validateCreatePin({ tags, text, creator, coords, buffer, originalname });
+
+  if (!isValid) {
+    return next(createError(400, ERROR.VALIDATION.invalidtags));
+  }
 
   AWS.config.update({
     region: AWS_REGION,
@@ -94,7 +100,7 @@ exports.createPin = async function (req, res, next) {
           },
         });
 
-        res.json({ status: "Save Pin" });
+        res.json({ status: "OK" });
       }
     });
   } catch (err) {
@@ -104,6 +110,10 @@ exports.createPin = async function (req, res, next) {
 
 exports.updatePin = async function (req, res, next) {
   const { pinId, userId } = req.body;
+
+  if (!pinId || !userId) {
+    return next(createError(400, ERROR.VALIDATION.invalidData));
+  }
 
   try {
     const currentTime = new Date().toISOString();

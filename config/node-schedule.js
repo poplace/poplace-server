@@ -21,7 +21,7 @@ function nodeSchedule() {
           await Pin.findByIdAndUpdate(id, { active: false });
         }
 
-        return;
+        continue;
       }
 
       const timeOver = getDate(createdAt);
@@ -32,7 +32,7 @@ function nodeSchedule() {
     }
   }
 
-  const job = schedule.scheduleJob("*/1 * * * * *", () => { updatePin(); });
+  const job = schedule.scheduleJob("*/1 * * * * *", () => updatePin());
 }
 
 module.exports = nodeSchedule;
