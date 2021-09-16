@@ -38,7 +38,7 @@ function validateCreatePin({
     return { isValid: false, message: ERROR.VALIDATION.invalidImage };
   }
 
-  return true;
+  return { isValid: true };
 }
 
 module.exports = validateCreatePin;
