@@ -77,6 +77,7 @@ exports.findPins = async function (req, res, next) {
     next(err);
   }
 };
+
 exports.createPin = async function (req, res, next) {
   const { tags, text, creator, coords } = req.body;
   const { buffer, originalname } = req.files.photo[0];
@@ -105,7 +106,7 @@ exports.createPin = async function (req, res, next) {
   try {
     s3.upload(params, async (err, data) => {
       if (err) {
-        console.log(err);
+        next(err);
       } else {
         await Pin.create({
           image: data.Location,
@@ -128,10 +129,9 @@ exports.createPin = async function (req, res, next) {
 
 exports.updatePin = async function (req, res, next) {
   const { pinId, userId } = req.body;
+  const currentTime = new Date().toISOString();
 
   try {
-    const currentTime = new Date().toISOString();
-
     await Pin.findByIdAndUpdate(
       pinId,
       {
