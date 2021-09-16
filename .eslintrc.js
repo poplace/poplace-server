@@ -22,7 +22,7 @@ module.exports = {
     "arrow-parens": ["warn", "always"],
     "func-style": ["warn", "declaration"],
     "comma-dangle": ["warn", "always-multiline"],
-    "prettier/prettier": ["warn", { printWidth: 100, trailingComma: "all" }],
+    "prettier/prettier": ["warn", { printWidth: 100 }],
     "linebreak-style": ["warn", "unix"],
     "no-unused-vars": [
       "warn",

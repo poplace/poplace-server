@@ -44,7 +44,7 @@ exports.getMyPins = async function (req, res, next) {
     const mySavedPins = await Pin.find({ savedUser: _id }).lean();
 
     if (!user) {
-      return next(createError(400, ERROR.notFoundUser));
+      return next(createError(400, ERROR.VALIDATION.notFoundUser));
     }
 
     return res.json({ status: "OK", myCreatedPins, mySavedPins });
