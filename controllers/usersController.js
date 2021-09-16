@@ -1,9 +1,11 @@
 const AWS = require("aws-sdk");
 const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
+const mongoose = require("mongoose");
 
-const User = require("../models/User");
 const ERROR = require("../constants/error");
+const User = require("../models/User");
+const validateNickname = require("../utils/validateNickname");
 
 const SECRET_KEY = process.env.SECRET_KEY;
 const AWS_REGION = process.env.AWS_REGION;
@@ -50,6 +52,11 @@ exports.signup = async function (req, res, next) {
   const { email, nickname } = req.body;
   const { buffer, originalname } = req.files.photo[0];
   const date = Date.now().toString();
+  const nicknameValidation = validateNickname(nickname);
+
+  if (!nicknameValidation.isValid) {
+    return next(createError(400, nicknameValidation.message));
+  }
 
   AWS.config.update({
     region: AWS_REGION,
@@ -73,20 +80,51 @@ exports.signup = async function (req, res, next) {
     const sameNickname = await User.findOne({ nickname }).lean();
 
     if (sameNickname) {
-      return next(createError(400, ERROR.sameNickname));
+      return next(createError(400, ERROR.VALIDATION.sameNickname));
     }
 
     await User.findOneAndUpdate({ email }, { nickname });
 
     s3.upload(params, async (err, data) => {
       if (err) {
-        console.log(err);
+        next(err);
       } else {
         await User.findOneAndUpdate({ email }, { image: data.Location });
 
         res.json({ status: "OK" });
       }
     });
+  } catch (err) {
+    if (err.name === "MongoError") {
+      return next(createError(500, ERROR.SERVER.default));
+    }
+
+    if (err instanceof mongoose.Error.ValidationError) {
+      return next(createError(500, ERROR.SERVER.default));
+    }
+
+    next(err);
+  }
+};
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+
+  try {
+    await User.findByIdAndDelete(id);
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+
+  try {
+    await User.findByIdAndDelete(id);
+    next();
   } catch (err) {
     next(err);
   }

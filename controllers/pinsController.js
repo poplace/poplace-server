@@ -45,7 +45,7 @@ exports.getMyPins = async function (req, res, next) {
     const mySavedPins = await Pin.find({ savedUser: _id, active: true }).lean();
 
     if (!user) {
-      return next(createError(400, ERROR.notFoundUser));
+      return next(createError(400, ERROR.VALIDATION.notFoundUser));
     }
 
     return res.json({ status: "OK", myCreatedPins, mySavedPins });
@@ -87,7 +87,7 @@ exports.createPin = async function (req, res, next) {
   try {
     s3.upload(params, async (err, data) => {
       if (err) {
-        console.log(err);
+        next(err);
       } else {
         await Pin.create({
           image: data.Location,
@@ -110,20 +110,38 @@ exports.createPin = async function (req, res, next) {
 
 exports.updatePin = async function (req, res, next) {
   const { pinId, userId } = req.body;
+  const currentTime = new Date().toISOString();
 
   if (!pinId || !userId) {
     return next(createError(400, ERROR.VALIDATION.invalidData));
   }
 
   try {
-    const currentTime = new Date().toISOString();
-
-    await Pin.findByIdAndUpdate(pinId, {
-      savedAt: currentTime,
-      savedUser: userId,
-    });
+    await Pin.findByIdAndUpdate(
+      pinId,
+      {
+        savedAt: currentTime,
+      },
+      {
+        active: false,
+      },
+      {
+        savedUser: userId,
+      },
+    );
 
     return res.json({ status: "OK" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+  try {
+    await Pin.deleteMany({ creator: id });
+
+    res.json({ status: "OK" });
   } catch (err) {
     next(err);
   }
