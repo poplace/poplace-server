@@ -10,7 +10,7 @@ function nodeSchedule() {
   async function updatePin() {
     const pins = await Pin.find({ active: true }).lean();
 
-    for (let i = 0; i < pins.length; i++) {
+    for (let i = 0; i < pins?.length; i++) {
       const pin = pins[i];
       const { createdAt, savedAt, _id: id } = pin;
 
