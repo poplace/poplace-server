@@ -41,38 +41,13 @@ exports.getMyPins = async function (req, res, next) {
     const user = await User.findOne({ email }).lean();
     const { _id } = user;
     const myCreatedPins = await Pin.find({ creator: _id }).lean();
-    const mySavedPins = await Pin.find({ savedUser: _id }).lean();
+    const mySavedPins = await Pin.find({ savedUser: _id, active: true }).lean();
 
     if (!user) {
       return next(createError(400, ERROR.VALIDATION.notFoundUser));
     }
 
     return res.json({ status: "OK", myCreatedPins, mySavedPins });
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.findPins = async function (req, res, next) {
-  const latitude = Number(req.query.latitude);
-  const longitude = Number(req.query.longitude);
-
-  try {
-    const pinsList = await Pin.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-          distanceField: "dist.calculated",
-          maxDistance: 1000,
-          spherical: true,
-        },
-      },
-    ]);
-
-    return res.json({ pinsList: pinsList });
   } catch (err) {
     next(err);
   }
@@ -146,6 +121,17 @@ exports.updatePin = async function (req, res, next) {
     );
 
     return res.json({ status: "OK" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.delete = async function (req, res, next) {
+  const { id } = req.body;
+  try {
+    await Pin.deleteMany({ creator: id });
+
+    res.json({ status: "OK" });
   } catch (err) {
     next(err);
   }
