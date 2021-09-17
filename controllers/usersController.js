@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
 const mongoose = require("mongoose");
 
-const ERROR = require("../constants/error");
+const { ERROR } = require("../constants");
 const User = require("../models/User");
 const validateNickname = require("../utils/validateNickname");
 
@@ -80,7 +80,7 @@ exports.signup = async function (req, res, next) {
     const sameNickname = await User.findOne({ nickname }).lean();
 
     if (sameNickname) {
-      return next(createError(400, ERROR.VALIDATION.sameNickname));
+      return next(createError(400, ERROR.sameNickname));
     }
 
     await User.findOneAndUpdate({ email }, { nickname });
@@ -96,11 +96,11 @@ exports.signup = async function (req, res, next) {
     });
   } catch (err) {
     if (err.name === "MongoError") {
-      return next(createError(500, ERROR.SERVER.default));
+      return next(createError(500, ERROR.server));
     }
 
     if (err instanceof mongoose.Error.ValidationError) {
-      return next(createError(500, ERROR.SERVER.default));
+      return next(createError(500, ERROR.server));
     }
 
     next(err);
