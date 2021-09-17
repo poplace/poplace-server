@@ -3,7 +3,7 @@ const AWS = require("aws-sdk");
 
 const Pin = require("../models/Pin");
 const User = require("../models/User");
-const ERROR = require("../constants/error");
+const { ERROR } = require("../constants");
 const validateCreatePin = require("../utils/validateCreatePin");
 
 const AWS_REGION = process.env.AWS_REGION;
@@ -45,7 +45,7 @@ exports.getMyPins = async function (req, res, next) {
     const mySavedPins = await Pin.find({ savedUser: _id, active: true }).lean();
 
     if (!user) {
-      return next(createError(400, ERROR.VALIDATION.notFoundUser));
+      return next(createError(400, ERROR.notFoundUser));
     }
 
     return res.json({ status: "OK", myCreatedPins, mySavedPins });
@@ -63,7 +63,7 @@ exports.createPin = async function (req, res, next) {
   const isValid = validateCreatePin({ tags, text, creator, coords, buffer, originalname });
 
   if (!isValid) {
-    return next(createError(400, ERROR.VALIDATION.invalidtags));
+    return next(createError(400, ERROR.invalidtags));
   }
 
   AWS.config.update({
@@ -113,7 +113,7 @@ exports.updatePin = async function (req, res, next) {
   const currentTime = new Date().toISOString();
 
   if (!pinId || !userId) {
-    return next(createError(400, ERROR.VALIDATION.invalidData));
+    return next(createError(400, ERROR.invalidData));
   }
 
   try {
