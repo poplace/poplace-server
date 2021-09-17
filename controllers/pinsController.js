@@ -121,11 +121,6 @@ exports.updatePin = async function (req, res, next) {
       pinId,
       {
         savedAt: currentTime,
-      },
-      {
-        active: false,
-      },
-      {
         savedUser: userId,
       },
     );
