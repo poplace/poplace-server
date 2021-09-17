@@ -4,7 +4,6 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const cors = require("cors");
 
 require("./config/db");
 
@@ -15,7 +14,6 @@ const usersRouter = require("./routes/users");
 const pinsRouter = require("./routes/pins");
 
 const app = express();
-app.use(cors());
 
 const nodeSchedule = require("./config/node-schedule");
 nodeSchedule();
